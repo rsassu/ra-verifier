@@ -51,7 +51,7 @@ class DBConnection(object):
         cf = pycassa.ColumnFamily(self.client, cf_name)
         try:
             query_result = cf.multiget(row_keys, column_reversed = sort_reverse)
-        except pycassa.NotFoundException, TException:
+        except pycassa.NotFoundException as TException:
             pass
 
         if include_cf_test == False:
@@ -62,7 +62,7 @@ class DBConnection(object):
             query_result_test = cf.multiget(row_keys,
                                             column_reversed = sort_reverse)
             merge_dict(query_result, query_result_test)
-        except pycassa.NotFoundException, TException:
+        except pycassa.NotFoundException as TException:
             pass
 
         return query_result
@@ -76,5 +76,5 @@ class DBConnection(object):
         cf = pycassa.ColumnFamily(self.client, cf_name)
         try:
             cf.insert(platform, {pathname: {digest_type: digest_string}})
-        except pycassa.NotFoundException, TException:
+        except pycassa.NotFoundException as TException:
                 pass

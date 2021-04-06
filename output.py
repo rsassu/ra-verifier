@@ -125,7 +125,7 @@ class HTMLOutput(object):
 			event_type = imarecord.digest.event_type
 
 			pkgs = imarecord.digest.pkgs
-			for key in pkgs.keys():
+			for key in list(pkgs.keys()):
 				if len(packagesstring) > 0:
 					packagesstring += ' '
 				packagesstring += '%s (%s) / %s (%s) / %s (%s)' %(pkgs[key]['current'][0], pkgs[key]['current'][1],

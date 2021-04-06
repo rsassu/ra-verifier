@@ -74,10 +74,10 @@ class DBLibrariesAction(Action):
 
         Digest.execute_digests_query(conn, distro)
 
-        unknown_digests = [digest for digest in Digest.digests_dict.values()
+        unknown_digests = [digest for digest in list(Digest.digests_dict.values())
                            if digest.event_type == '' and not digest.is_fake]
 
-        for subj in Subject.subj_label_dict.values():
+        for subj in list(Subject.subj_label_dict.values()):
             # Link unknown digests to set subject severity level to not-found.
             # Without knowing what is the event type of an unknown digest,
             # it may have been executed by a process.
@@ -176,7 +176,7 @@ class LSMLabelSELinuxAction(Action):
 
     def __init__(self, conn, distro, graph, policy, active_processes_path):
         policy_source, policy_path = policy.split(':')
-        self.subjs = [selinux_type(s.label) for s in Subject.subj_label_dict.values()]
+        self.subjs = [selinux_type(s.label) for s in list(Subject.subj_label_dict.values())]
 
         if active_processes_path is not None:
             self.parse_active_processes(active_processes_path)

@@ -36,7 +36,7 @@ tcb_subjects = []
 class SELinux(object):
     def parse_rule(self, rule = None):
         rule_is_cond = False
-        r = rule.split()
+        r = rule.decode('ascii').split()
         if len(r) == 0:
             return None
 
@@ -131,7 +131,7 @@ class SELinux(object):
                 if alias == 1 and attribute == '};':
                     alias = 0
                     continue
-		if alias == 1:
+                if alias == 1:
                     aliases.append(attribute)
                     continue;
 

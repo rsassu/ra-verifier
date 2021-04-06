@@ -41,7 +41,7 @@ def parse_IMA_Image(hash_str, type_str, image_blob):
         namelen = struct.unpack("<L", image_blob[offset:offset + 4])[0]
         line += ' ' + image_blob[offset:namelen]
     else:
-	if type_str == 'ima-ng':
+        if type_str == 'ima-ng':
             type_str = 'd-ng|n-ng'
         i = 0
         while offset < len(image_blob):

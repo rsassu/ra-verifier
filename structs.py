@@ -194,7 +194,7 @@ class Digest(GenericNode):
         query_result = conn.multiget_query(rows, 'FilesToPackages', distro,
                                            True, False)
 
-        for digest_obj in cls.digests_dict.values():
+        for digest_obj in list(cls.digests_dict.values()):
             digest_string = digest_obj.digest_string
             if digest_string in known_digests:
                 event_name = digest_obj.ima_records[0].entry['event_name']
@@ -235,7 +235,7 @@ class Digest(GenericNode):
                 digest_obj.lib_aliases = data['lib_aliases'].split(',')
 
             digest_obj.pkgs = {}
-            pkg_data = [pkg_key[4:] for pkg_key in data.keys()
+            pkg_data = [pkg_key[4:] for pkg_key in list(data.keys())
                         if pkg_key.startswith('pkg-')]
             for pkg_name in pkg_data:
                 if pkg_name not in digest_obj.pkgs:
@@ -254,7 +254,7 @@ class Digest(GenericNode):
                                            'PackagesHistory', distro,
                                            True, True)
 
-        for digest_obj in Digest.digests_dict.values():
+        for digest_obj in list(Digest.digests_dict.values()):
             if digest_obj.is_fake:
                 continue
             if digest_obj.event_type == '':
@@ -317,7 +317,7 @@ class Subject(GenericNode):
 
     @classmethod
     def get_by_type(cls, label = None, fake = False):
-        return [cls.subj_label_dict[key] for key in cls.subj_label_dict.keys() \
+        return [cls.subj_label_dict[key] for key in list(cls.subj_label_dict.keys()) \
                 if key.split(':')[2] == label][0]
 
     def __init__(self, label = None, fake = False):
@@ -339,7 +339,7 @@ class Object(GenericNode):
 
     @classmethod
     def get_type_class(cls, type = None, class_str = None):
-        found_objs = [o for o in cls.obj_label_dict.values() \
+        found_objs = [o for o in list(cls.obj_label_dict.values()) \
                       if selinux_type(o.label) == type and \
                       selinux_class(o.label) == class_str]
         return found_objs

@@ -39,7 +39,7 @@ class FileTypeAggregation(Aggregation):
 
         Digest.execute_digests_query(conn, distro)
 
-        for digest_obj in Digest.digests_dict.values():
+        for digest_obj in list(Digest.digests_dict.values()):
             # set of instances which a digest is linked to
             items = set()
             if digest_obj.event_type == 'lib':

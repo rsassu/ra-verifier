@@ -85,15 +85,15 @@ class LoadTimeAnalysis(Analysis):
         self.n_packages_not_security = 0
         self.n_packages_unknown = 0
 
-        if len(target) > 0 and len([l for l in Subject.subj_label_dict.keys()
+        if len(target) > 0 and len([l for l in list(Subject.subj_label_dict.keys())
                 if selinux_type(l) == target]) == 0:
             raise Exception('Target not found')
 
-        if len(tcb) > 0 and len([l for l in Subject.subj_label_dict.keys()
+        if len(tcb) > 0 and len([l for l in list(Subject.subj_label_dict.keys())
                 if selinux_type(l) in tcb]) != len(tcb):
             raise Exception('One or more TCB subjects not found')
 
-        for digest_obj in Digest.digests_dict.values():
+        for digest_obj in list(Digest.digests_dict.values()):
             digest_obj.severity_level = 'ok'
 
             if digest_obj.is_fake:
@@ -152,7 +152,7 @@ class LoadTimeAnalysis(Analysis):
                     if propagation_rule(severity_level, update_type) == True:
                         severity_level = update_type
 
-        for package_obj in Package.pkg_dict.values():
+        for package_obj in list(Package.pkg_dict.values()):
             if package_obj.severity_level == 'ok':
                 self.n_packages_ok += 1
             elif package_obj.severity_level == 'security':
@@ -162,11 +162,11 @@ class LoadTimeAnalysis(Analysis):
             else:
                 self.n_packages_not_security += 1
 
-        self.starting_nodes = [obj for obj in Digest.digests_dict.values()
+        self.starting_nodes = [obj for obj in list(Digest.digests_dict.values())
                           if obj.severity_level != 'ok']
-        self.starting_nodes += Package.pkg_dict.values()
+        self.starting_nodes += list(Package.pkg_dict.values())
         if len(self.starting_nodes) == 0:
-            self.starting_nodes += Object.obj_label_dict.values()
+            self.starting_nodes += list(Object.obj_label_dict.values())
 
     def propagate_errors(self, topic = 'code+data', target_subjs = None):
         LOAD_TIME_EDGES = self.edges_types_by_topic(topic)
@@ -201,22 +201,22 @@ class LoadTimeAnalysis(Analysis):
             (len(self.tcb) > 0 and selinux_type(subj.label) in self.tcb)
 
     def view_statistics(self):
-        print 'Statistics:'
-        print ' - %d Digests: (%d ok, %d not found, %d fake libraries)' % \
-            (len(Digest.digests_dict.values()), self.n_digests_ok,
-            self.n_digests_not_found, self.n_digests_fake_lib)
-        print ' - %d Packages: ' \
+        print('Statistics:')
+        print(' - %d Digests: (%d ok, %d not found, %d fake libraries)' % \
+            (len(list(Digest.digests_dict.values())), self.n_digests_ok,
+            self.n_digests_not_found, self.n_digests_fake_lib))
+        print(' - %d Packages: ' \
             '(%d ok, %d security, %d not security, %d unknown)' % \
-            (len(Package.pkg_dict.values()), self.n_packages_ok,
+            (len(list(Package.pkg_dict.values())), self.n_packages_ok,
             self.n_packages_security, self.n_packages_not_security,
-            self.n_packages_unknown)
+            self.n_packages_unknown))
 
     def view_graph(self, only_prop_true = True):
         LOAD_TIME_EDGES = self.edges_types_by_topic('code+data')
         fake_node = GenericNode()
         edges_list = []
 
-        for subj in Subject.subj_label_dict.values():
+        for subj in list(Subject.subj_label_dict.values()):
             if not self.subj_is_selected(subj):
                 continue
 
@@ -251,7 +251,7 @@ class LoadTimeAnalysis(Analysis):
         level, op = requirement
         severity_level = 'ok'
 
-        for subj in Subject.subj_label_dict.values():
+        for subj in list(Subject.subj_label_dict.values()):
             if not self.subj_is_selected(subj):
                 continue
 
@@ -281,7 +281,7 @@ class LoadTimeAnalysis(Analysis):
 
     def satisfies_requirement_priv(self, priv_processes = [], msg = {}):
         result = True
-        for subj in Subject.subj_label_dict.values():
+        for subj in list(Subject.subj_label_dict.values()):
             if selinux_type(subj.label) in priv_processes and \
                     subj.severity_level != 'l4_ima_all_ok':
                 result = False
@@ -321,7 +321,7 @@ class RunTimeAnalysis(Analysis):
                 fd.write('\n')
 
     def write_policy(self):
-        fd = open("infoflow-policy", 'wc')
+        fd = open("infoflow-policy", 'w')
         self.write_rule(fd, 'tcb obj=%s', [obj for obj in \
             self.r['o_target'] - set(self.r['o_filter'].keys())])
         self.write_rule(fd, 'tcb obj=%s', [obj for obj in \
@@ -345,45 +345,45 @@ class RunTimeAnalysis(Analysis):
         self.report_id = report_id
 
         self.r = {}
-        self.r['s_target'] = set([s for s in Subject.subj_label_dict.values() \
+        self.r['s_target'] = set([s for s in list(Subject.subj_label_dict.values()) \
             if selinux_type(s.label) == target])
 
         if len(target) > 0 and len(self.r['s_target']) != 1:
             raise Exception('Target subject not found')
 
-        self.r['s_tcb'] = set([s for s in Subject.subj_label_dict.values() \
+        self.r['s_tcb'] = set([s for s in list(Subject.subj_label_dict.values()) \
             if selinux_type(s.label) in tcb])
 
         if len(self.r['s_tcb']) < len(tcb):
             raise Exception('One or more TCB subjects not found')
 
         self.r['o_filter'] = {}
-        for obj_str in filter_list.keys():
+        for obj_str in list(filter_list.keys()):
             parsed_obj_str = obj_str.split(':')
             objs = Object.get_type_class(parsed_obj_str[0], parsed_obj_str[1])
             for obj in objs:
-                if obj not in self.r['o_filter'].keys():
+                if obj not in list(self.r['o_filter'].keys()):
                     self.r['o_filter'][obj] = set()
 
                 self.r['o_filter'][obj].update(
-                    set([s for s in Subject.subj_label_dict.values() \
+                    set([s for s in list(Subject.subj_label_dict.values()) \
                     if selinux_type(s.label) in filter_list[obj_str]]))
 
-        for obj in self.r['o_filter'].keys():
+        for obj in list(self.r['o_filter'].keys()):
             for filter_subj in self.r['o_filter'][obj]:
                 if filter_subj not in self.r['s_tcb'] and \
                   filter_subj not in self.r['s_target']:
                     raise Exception('Filtering subject %s not in the TCB' \
                                     %filter_subj.label)
 
-        self.r['s_no_tcb'] = set([s for s in Subject.subj_label_dict.values() \
+        self.r['s_no_tcb'] = set([s for s in list(Subject.subj_label_dict.values()) \
             if s not in self.r['s_target'] and s not in self.r['s_tcb']])
 
         flow_edges = set([(u, v) for (u, v, d) in self.graph.edges(data = True) \
                       if 'edge_tag_flow' in d or 'edge_tag_exec' in d or 'edge_tag_data_read' in d])
 
         filter_edges = set()
-        for obj in self.r['o_filter'].keys():
+        for obj in list(self.r['o_filter'].keys()):
             if len(self.r['o_filter'][obj]):
                 for subj in self.r['o_filter'][obj]:
                     try:
@@ -494,10 +494,10 @@ class RunTimeAnalysis(Analysis):
                clusters = clusters)
 
     def view_statistics(self):
-        print 'Statistics:'
-        print ' - %d conflicts: (%d TCB, %d target)' % \
+        print('Statistics:')
+        print(' - %d conflicts: (%d TCB, %d target)' % \
             (len(self.r['o_tcb_conflict']) + len(self.r['o_target_conflict']),
-            len(self.r['o_tcb_conflict']), len(self.r['o_target_conflict']))
+            len(self.r['o_tcb_conflict']), len(self.r['o_target_conflict'])))
 
 
 class ProcTransAnalysis(Analysis):
@@ -521,7 +521,7 @@ class ProcTransAnalysis(Analysis):
             graph.add_edge(parent_subj, child_subj, edge_tag_proc_trans = True)
 
     def get_predecessors(self, subj_label):
-        subj_list = [subj for subj in Subject.subj_label_dict.values() \
+        subj_list = [subj for subj in list(Subject.subj_label_dict.values()) \
                 if selinux_type(subj.label) == subj_label]
         if len(subj_list) == 0:
             raise Exception('Subject %s not found' % subj_label)

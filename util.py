@@ -27,8 +27,8 @@ from collections import deque
 
 def merge_dict(dest_dict, source_dict):
     try:
-        keys = source_dict.keys()
-        childdictkeys = source_dict[keys[0]].keys()
+        keys = list(source_dict.keys())
+        childdictkeys = list(source_dict[keys[0]].keys())
         for key in keys:
             try:
                 merge_dict(dest_dict[key], source_dict[key])

@@ -94,7 +94,7 @@ def main(argv):
             analysis = arg
         elif opt in ("-g", "--graph_type"):
             if arg not in graph_types:
-                print 'Unknown graph type %s' % arg
+                print(('Unknown graph type %s' % arg))
             graph_type = arg
         elif opt in ("-s", "--policy_path"):
             policy_path = arg
@@ -155,7 +155,7 @@ def main(argv):
             graph_type = 'lsm'
 
     if graph_type == 'auto':
-        print 'Graph type cannot be determined, exiting.'
+        print('Graph type cannot be determined, exiting.')
         sys.exit(2)
 
     if graph_type == 'digests':
@@ -269,7 +269,7 @@ def main(argv):
                 if draw_graph:
                     a.view_graph()
             except Exception as e:
-                print e
+                print(e)
                 sys.exit(2)
 
     # Perform the ProcWrite analysis to see if some processed changed their
@@ -305,7 +305,7 @@ def main(argv):
                 a.propagate_errors('data', priv_processes)
 
         except Exception as e:
-            print e
+            print(e)
             traceback.print_exc()
             sys.exit(2)
 
@@ -340,7 +340,7 @@ def main(argv):
                                 report_id = report_id)
             a.write_policy()
         except Exception as e:
-            print e
+            print(e)
             sys.exit(2)
 
         global_result &= a.satisfies_requirement(error_message)
@@ -351,7 +351,7 @@ def main(argv):
 
         Statistics.set_elapsed_time('time_run_time_analysis')
     if 'check-cert' in analysis_name:
-        result = cert_digest in Digest.digests_dict.keys()
+        result = cert_digest in list(Digest.digests_dict.keys())
         if not result:
             error_message['cert'] = ['not found']
         global_result &= result
@@ -374,8 +374,8 @@ def main(argv):
                                         Statistics.get_stat('time_run_time_analysis'),
                                         Statistics.get_stat('time_total')))
 
-    print '\n'.join([key + ') ' + '; '.join(error_message[key]) \
-        for key in error_message])
+    print('\n'.join([key + ') ' + '; '.join(error_message[key]) \
+        for key in error_message]))
     log_info( '\n'.join([key + ') ' + '; '.join(error_message[key]) for key in error_message]))
     log_end()
 
